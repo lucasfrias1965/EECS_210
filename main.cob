@@ -43,6 +43,7 @@ working-storage section.
                         depending on n-squared.
 
    *> this is the seen list of our algorithm, which is N long
+    01 seen-i           pic 9(02) value 1.
     01 seen-list.
         05 element-seen pic 1(01)
                         occurs 1 to 10 times
@@ -54,6 +55,11 @@ working-storage section.
         05 weight       pic 9(04)
                         occurs 1 to 100 times
                         depending on n-squared.
+
+    01 min-dist          pic 9(04).
+    01 min-index         pic 9(02).
+    01 relax-i           pic 9(02).
+    01 edge-weight       pic 9(04).
 
     01 start-letter     pic x(05).
     01 end-letter       pic x(05).
@@ -177,16 +183,39 @@ procedure division.
     500-dih-algorithm.
         display "doing dih".
 
-        *> set weights-i to two, we iterate through the second to last element
-        *> the first element (cobol is also one indexed) is our starting point
-
-        compute weights-i = 2.
-
-        perform until weights-i = n-count
-           compute weight(weights-i) = 999
+        perform varying weights-i from 1 by 1 until weights-i > n-count
+           compute weight(weights-i) = 9999
         end-perform.
 
+        compute weight(start-index) = 0.
 
-    
-    
-        
+        perform varying seen-i from 1 by 1 until seen-i > n-count
+            compute element-seen(seen-i) = 0
+        end-perform.
+
+        perform until element-seen(end-index) = 1
+            compute min-dist = 9999
+            compute min-index = 0
+
+            perform varying weights-i from 1 by 1 until weights-i > n-count
+                if element-seen(weights-i) = 0 and weight(weights-i) < min-dist
+                    compute min-dist = weight(weights-i)
+                    compute min-index = weights-i
+                end-if
+            end-perform
+
+            compute element-seen(min-index) = 1
+
+            perform varying relax-i from 1 by 1 until relax-i > n-count
+                if element-seen(relax-i) = 0
+                    compute idx = ((min-index - 1) * n-count) + relax-i
+                    move cell(idx) to edge-weight
+                    if edge-weight < 9999 and min-dist + edge-weight < weight(relax-i)
+                        compute weight(relax-i) = min-dist + edge-weight
+                    end-if
+                end-if
+            end-perform
+        end-perform.
+
+        display weight(end-index).
+
