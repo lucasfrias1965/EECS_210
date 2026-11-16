@@ -19,34 +19,48 @@ data division.
 
 working-storage section.
 
+    *> these are to help get input
     01 input-line pic x(25).
     01 temp-string      pic x(25).
     01 string-i         pic 9(05) value 1.
     01 matrix-index     pic 9(04) value 1.
     01 lines-left       pic 9(03) value zero.
   
+    *> this is just n of our nxn and then the n^2 value
     01 n-count          pic 9(02) value zero.
     01 n-squared        pic 9(04) value zero.     
 
-
+    *> these vars are just for printing
     01 row-idx          pic 9(02) value 1.
     01 col-idx          pic 9(02) value 1.
     01 disp-cell        pic z(03)9.
     01 idx              pic 9(03) value 0.
-
+    
     *> make it n^2 for the whole length of our nxn (n^2) matrix
     01 user-matrix.
         05 cell         pic 9(04)
                         occurs 1 to 100 times
                         depending on n-squared.
 
-    
+   *> this is the seen list of our algorithm, which is N long
+    01 seen-list.
+        05 element-seen pic 1(01)
+                        occurs 1 to 100 times
+                        depending on n-count.
+
+    01 weights-list.
+        05 weight       pic 9(04)
+                        occurs 1 to 100 times
+                        depending on n-squared.
+
+
 procedure division.
     100-main. 
         display "input your matrix".
         perform 200-get-first-line.
         perform 400-get-rest-of-lines.
-        
+        perform 500-dih-algorithm. 
+
         stop run.
 
     200-get-first-line.
@@ -72,7 +86,7 @@ procedure division.
                 if temp-string not = "*"
                     compute cell(matrix-index) = function numval(temp-string)
                 else
-                    compute cell(matrix-index) = 99
+                    compute cell(matrix-index) = 9999
                 end-if
                 add 1 to matrix-index
             end-if
@@ -117,7 +131,7 @@ procedure division.
                     if temp-string not = "*"
                         compute cell(matrix-index) = function numval(temp-string)
                     else
-                        compute cell(matrix-index) = 99
+                        compute cell(matrix-index) = 9999
                     end-if
                     add 1 to matrix-index
                 end-if
@@ -129,3 +143,6 @@ procedure division.
             end-perform
 
         perform 300-print-matrix.
+
+    500-dih-algorithm.
+        display "doing dih".
