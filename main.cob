@@ -45,13 +45,20 @@ working-storage section.
    *> this is the seen list of our algorithm, which is N long
     01 seen-list.
         05 element-seen pic 1(01)
-                        occurs 1 to 100 times
+                        occurs 1 to 10 times
                         depending on n-count.
 
+
+    01 weights-i        pic 9(02).
     01 weights-list.
         05 weight       pic 9(04)
                         occurs 1 to 100 times
                         depending on n-squared.
+
+    01 start-letter     pic x(05).
+    01 end-letter       pic x(05).
+    01 start-index      pic 9(02).
+    01 end-index        pic 9(02).
 
 
 procedure division.
@@ -142,7 +149,44 @@ procedure division.
 
             end-perform
 
-        perform 300-print-matrix.
+            perform 490-get-start-n-end.
+
+    490-get-start-n-end.
+        display "Enter two distinct letters: "
+
+        accept input-line.
+
+        *> same old, split but without a loop
+
+        unstring input-line delimited by all spaces into start-letter end-letter.
+
+        *> here, we conver it to uppercase, then get the ordinality of the char and move it to the start index
+        move function ord(function upper-case (start-letter)) to start-index.
+        subtract 65 from start-index.
+        display start-index.
+        
+        unstring input-line delimited by all spaces into temp-string.
+
+        move function ord(function upper-case (end-letter)) to end-index.
+        subtract 65 from end-index.
+
+        display end-index.
+        
+
 
     500-dih-algorithm.
         display "doing dih".
+
+        *> set weights-i to two, we iterate through the second to last element
+        *> the first element (cobol is also one indexed) is our starting point
+
+        compute weights-i = 2.
+
+        perform until weights-i = n-count
+           compute weight(weights-i) = 999
+        end-perform.
+
+
+    
+    
+        
