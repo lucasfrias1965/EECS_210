@@ -93,6 +93,10 @@ procedure division.
     200-get-first-line.
         *> get user input and feed into buffer
         accept input-line.
+        *> replace the values
+        
+        inspect input-line replacing all "," by " ". 
+    
         move 1 to string-i.
         move 0 to n-count.
         perform until string-i > 25
@@ -124,7 +128,6 @@ procedure division.
         compute lines-left = n-count.
         subtract 1 from lines-left.
 
-        perform 300-print-matrix.
 
     300-print-matrix.
         perform varying row-idx from 1 by 1 until row-idx > n-count
@@ -183,14 +186,12 @@ procedure division.
         *> here, we conver it to uppercase, then get the ordinality of the char and move it to the start index
         move function ord(function upper-case (start-letter)) to start-index.
         subtract 65 from start-index.
-        display start-index.
         
         unstring input-line delimited by all spaces into temp-string.
 
         move function ord(function upper-case (end-letter)) to end-index.
         subtract 65 from end-index.
 
-        display end-index.
         
 
 
@@ -247,6 +248,7 @@ procedure division.
                     move cell(idx) to edge-weight
 
                     if edge-weight < 9999 and min-dist + edge-weight < weight(relax-i)
+                        *> redistribute weights
                         compute weight(relax-i) = min-dist + edge-weight
                         *> min-index got us here with a shorter path, so it's our predecessor
                         move min-index to predecessor(relax-i)
@@ -261,35 +263,30 @@ procedure division.
         perform 600-print-path.
 
     600-print-path.
-        *> walk backwards from end to start, appending each letter
-        *> to a string, then reverse the whole string at the end
-        *> to get start-to-end order
+        *> make a string with all spaces, and we're going to incremen every time
         move spaces to path-string
         move 1 to path-ptr
         move end-index to path-i
 
-        compute disp-letter-code = path-i + 65
-        move function char(disp-letter-code) to disp-letter
-        string disp-letter delimited by size
-            into path-string
-            with pointer path-ptr
-        end-string
-        move predecessor(path-i) to path-i
-
+        *> keep doing this till we can no longer
         perform until path-i = 0
+            *> okay now we calculate the letter code
             compute disp-letter-code = path-i + 65
+            *> move the letter code to the display letter
             move function char(disp-letter-code) to disp-letter
 
-            *> comma goes first here since the whole string gets
-            *> reversed at the end, a single-char separator reverses
-            *> cleanly, so it ends up between the right letters
-            string "," disp-letter delimited by size
+            *> move the display letter into the path-string
+            string disp-letter delimited by size
                 into path-string
                 with pointer path-ptr
+                *> implicitly increment our path pointer!!
             end-string
 
+            *> move the predecessor to the path i 
             move predecessor(path-i) to path-i
+
         end-perform.
 
+        *> display the output, trim removes leading whitespace
         display function trim(function reverse(path-string)).
 
